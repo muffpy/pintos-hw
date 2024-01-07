@@ -75,24 +75,29 @@ int add_word(WordCount **wclist, char *word) {
      Otherwise insert with count 1.
      Returns 0 if no errors are encountered in the body of this function; 1 otherwise.
   */
-  WordCount *wc = find_word(*wclist, word);
-  if(wc != NULL)
-  {
-    wc->count ++;
-  }
-  else
-  {
-    wc = (WordCount *) malloc(sizeof(WordCount));
-    if(wc == NULL)
+    WordCount *found = find_word(*wclist, word);
+    if (found)
     {
-      return 1;
+      found->count += 1;
     }
-    wc->word = new_string(word);
-    wc->count = 1;
-    wc->next = *wclist;
-    *wclist = wc;
-  }
-  return 0;
+    else
+    {
+      WordCount *new_word = (WordCount *)malloc(sizeof(WordCount));
+      if (new_word == NULL)
+      {
+        return 1; // Error in memory allocation
+      }
+      new_word->word = new_string(word);
+      if (new_word->word == NULL)
+      {
+        free(new_word);
+        return 1; // Error in memory allocation
+      }
+      new_word->count = 1;
+      new_word->next = *wclist;
+      *wclist = new_word;
+    }
+    return 0;
 }
 
 void fprint_words(WordCount *wchead, FILE *ofile) {
